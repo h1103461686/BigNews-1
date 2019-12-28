@@ -37,7 +37,71 @@
       </form>
     </div>
   </div>
+  <script>
+    //给login_form注册提交时间
+    /* $('.login_form').submit(function (e) {
+      //阻止默认行为，因为我们需要验证用户输入内容是否正确
+      e.preventDefault();
 
+      const input_txt = $('.input_txt').val().trim();
+      const input_pass = $('.input_pass').val().trim();
+
+
+      $.ajax({
+        type: 'post',
+        url: 'http://localhost:8080/api/v1/admin/user/login',
+        data: {
+          username: input_txt,
+          password: input_pass,
+        },
+        dataType: 'json',
+        success: function (res) {
+          // console.log(res);
+          const code = res.code;
+          const msg = res.msg;
+          const token = res.token;
+          if (res.code === 200) {
+            localStorage.setItem('token', token);
+            location.href = './index.html';
+          } else {
+            alert(msg);
+          }
+        }
+      })
+
+    }) */
+    $('.login_form').submit(function (e) {
+      //先组织表单默认行为（如跳转）
+      e.preventDefault();
+      const input_txt = $('.input_txt').val().trim();
+      const input_pass = $('.input_pass').val().trim();
+
+      $.ajax(
+        {
+          type: 'post',
+          url: 'http://localhost:8080/api/v1/admin/user/login',
+          data: {
+            username: input_txt,
+            password: input_pass
+          },
+          dataType: 'json',
+          success: function (res) {
+            console.dir(res);
+            const code = res.code;
+            const msg = res.msg;
+            const token = res.token;
+            if (res.code === 200) {
+              localStorage.setItem('token', token);
+              location.href = './index.html';
+            } else {
+              alert(msg);
+            }
+          }
+        }
+      )
+    })
+
+  </script>
 </body>
 
 </html>

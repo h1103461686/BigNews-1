@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>文章列表</title>
+    <title>个人中心</title>
     <link rel="stylesheet" href="./libs/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/iconfont.css">
@@ -48,7 +48,7 @@
                         <!-- 给label标签的for属性赋值,值是input标签的id,那这样的话点击label就相当于点击了input -->
                         <br>
                         <label for="exampleInputFile">
-                            <img src="./images/uploads_icon.jpg" style="height: 50px;" alt="">
+                            <img src="./images/uploads_icon.jpg" style="height: 50px;" alt="" id="user_pic_m">
                         </label>
                     </div>
                 </div>
@@ -68,6 +68,59 @@
             </form>
         </div>
     </div>
+
+
+    <script src="./js/http.js"></script>
+    <script>
+        // 设置入口函数  页面一加载就执行函数
+        $(function () {
+            // 获取用户信息并且渲染到页面
+            $.ajax({
+                type: 'get',
+                url: BigNew.user_detail,
+                dataType: 'json',
+                success: function (res) {
+                    for (var key in res.data) {
+                        $('input .' + key).val(res.data[key])
+                    }
+                    $('.user_pic').attr('src', res.data.userPic);
+                }
+            })
+            // 点击文件获取文件的信息并且渲染到页面
+            $('#exampleInputFile').on('change', function () {
+                const file = this.files[0];
+                const url = URL.createObjectURL(file);
+                $('#user_pic_m').attr('src', url);
+            })
+            // 点击修改按钮的时候将页面中的信息传输到后台
+            $('#form').on('submit', function (e) {
+                // 先阻止表单默认跳转行为
+                e.preventDefault();
+                // 获取表单里的值
+                const formdata = new FormData(this);
+                // ajax 发送post请求,将值传入后天
+                $.ajax({
+                    type: 'post',
+                    url: BigNew.user_edit,
+                    data: formdata,
+                    // 取消自动转译文本内容
+                    contentType: false,
+                    // 取消自动将数据序列化(转化为对象字符串等后台可以识别的数据)
+                    processData: false,
+                    success: function (res) {
+                        if (res.code === 200) {
+                            alert('修改成功')
+                        }
+                        location.reload()
+                    }
+                })
+            })
+
+
+        })
+    </script>
+
 </body>
+
 
 </html>

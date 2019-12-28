@@ -55,30 +55,28 @@
         </div>
     </div>
 
+
+    <script src="./js/http.js"></script>
     <script>
-        //查询个人信息+退出登录
         $(function () {
-            /* 查询个人信息:
-            1, 页面一加载就发送ajax请求
-            2, 相应数据之后渲染到页面 */
-            //页面一加载就获取本地存储的token令牌
+            /* //页面一加载就获取本地存储的token令牌
             const token = localStorage.getItem('token');
             //判断 如果没有令牌就打回登录页面
             if (!token) {
                 location.href = './login.html';
-            }
+            } */
             //发送ajax请求
             $.ajax(
                 {
                     type: 'get',
                     // 获取用户信息的接口
                     url: 'http://localhost:8080/api/v1/admin/user/info',
-                    // 设置请求头
+                    /* // 设置请求头
                     headers: {
                         // token 令牌告诉服务器,当前是哪个客户要访问数据
                         // Authorization 翻译是授权的意思,值就是我们的token
                         Authorization: token
-                    },
+                    }, */
                     dataType: 'json',
                     success: function (res) {
                         //将用户名设置为后台获取的用户名

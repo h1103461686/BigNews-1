@@ -38,7 +38,7 @@
     </div>
   </div>
 
-  //模态框
+  <!-- 模态框 -->
   <div class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -51,8 +51,8 @@
           <p id="login_msg">One fine body&hellip;</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">确认</button>
-          <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+          <button type="button" class="btn btn-default" data-dismiss="modal"
+            style="background-color: limegreen;">确认</button>
         </div>
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -89,13 +89,13 @@
             const msg = res.msg;
             const token = res.token;
             //处理响应结果
+            // 调用模态框
             if (res.code === 200) {
               localStorage.setItem('token', token);
               location.href = './index.html';
-            } else {
-              $('#login_msg').text(msg)
-              $('.modal').modal({ keyboard: true });
             }
+            $('#login_msg').text(msg)
+            $('.modal').modal({ keyboard: true });
           }
         }
       )

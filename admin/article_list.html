@@ -13,6 +13,7 @@
     <script src="./libs/jquery-1.12.4.min.js"></script>
     <!-- 引入模板引擎js文件 -->
     <script src="./libs/template-web.js"></script>
+    <script src="./js/http.js"></script>
 </head>
 
 <body>
@@ -72,6 +73,38 @@
             </div>
         </div>
     </div>
+
+
+
+    <script type="text/html" id="res">
+    {{each data.data}}
+    <tr>
+        <td>{{$value.title}}</td>
+        <td>{{$value.author}}</td>
+        <td>{{$value.category}}</td>
+        <td class="text-center">{{$value.date}}</td>
+        <td class="text-center">{{$value.state}}</td>
+        <td class="text-center">
+            <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
+            <a href="javascript:void(0);" class="btn btn-danger btn-xs delete">删除</a>
+        </td>
+    </tr>
+    {{/each}}
+    </script>
+    <script>
+        // 入口函数   页面一加载就获取后台数据,渲染到本页面
+        $(function () {
+            $.ajax({
+                type: 'get',
+                url: BigNew.article_query,
+                dataType: 'json',
+                success: function (res) {
+                    $('.table tbody').html(template('res', res))
+                }
+            })
+        })
+    </script>
+
 </body>
 
 </html>

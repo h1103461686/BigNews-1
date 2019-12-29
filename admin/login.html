@@ -48,7 +48,7 @@
           <h4 class="modal-title">提示</h4>
         </div>
         <div class="modal-body">
-          <p id="login_msg">One fine body&hellip;</p>
+          <p>One fine body&hellip;</p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal"
@@ -87,17 +87,19 @@
           dataType: 'json',
           //请求成功后回调函数
           success: function (res) {
-            const code = res.code;
-            const msg = res.msg;
-            const token = res.token;
             //处理响应结果
             // 调用模态框
             if (res.code === 200) {
-              localStorage.setItem('token', token);
-              location.href = './index.html';
+              localStorage.setItem('token', res.token);
+              $('#login_msg').text(res.msg);
+              $('.modal').modal({ keyboard: true });
+              $('.modal').on('hidden.bs.modal', function () {
+                location.href = './index.html';
+              })
+            } else {
+              $('.modal-body p').text(res.msg);
+              $('.modal').modal({ keyboard: true });
             }
-            $('#login_msg').text(msg)
-            $('.modal').modal({ keyboard: true });
           }
         }
       )

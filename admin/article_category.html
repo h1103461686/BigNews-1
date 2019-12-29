@@ -45,11 +45,43 @@
                     <tr>
                         <td colspan="3" class="text-center">
                             <a href="javascript:void(0)" class="btn btn-success" id="xinzengfenlei" data-toggle="modal"
-                                data-target="#myModal">新增分类</a>
+                                data-target="#exampleModal">新增分类</a>
                         </td>
                     </tr>
                 </tfoot>
             </table>
+        </div>
+    </div>
+
+    <!-- 动态模态框 -->
+    <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"
+        data-whatever="@mdo">Open modal for @mdo</button> -->
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">新增分类</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">分类名称:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">分类别名:</label>
+                            <textarea class="form-control" id="message-text" style="resize: none;"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary">Send Message</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -60,7 +92,7 @@
             <td>{{$value.name}}</td>
             <td>{{$value.slug}}</td>
             <td class="text-center">
-                <a href="javascript:void(0)" data-toggle="modal" class=" btn btn-info btn-xs">编辑</a>
+                <a href="javascript:void(0)" class=" btn btn-info btn-xs"  data-toggle="modal" data-target="#exampleModal">编辑</a>
                 <a href="javascript:void(0)" class="btn btn-danger btn-xs">删除</a>
             </td>
         </tr>
@@ -77,6 +109,77 @@
                     $('.table tbody').html(template('res', res))
                 }
             })
+
+            // 新增分类 点击事件
+            //      1, 点击新增分类弹出动态模态框， 让客户输入名称和Slug
+            $('#exampleModal').on('show.bs.modal', function (e) {
+                // 获取当前出发模态框的 点击事件
+                // 如果点击目标是 新增分类：
+                if (e.relatedTarget === $('#xinzengfenlei')[0]) {
+                    // 将模态框按钮设置为新增
+                    // 添加 点击事件 ajax发送请求 向后台发送数据， 重新刷新页面
+                    $('.btn-primary').text('新增').on('click', function () {
+                        $.ajax({
+                            type: 'post',
+                            url: BigNew.category_add,
+                            dataType: 'json',
+                            data: {
+                                name: $('#recipient-name').val(),
+                                slug: $('#message-text').val()
+                            },
+                            success: function (res) {
+                                if (res.code === 201) {
+                                    alert('新增成功');
+                                    location.reload()
+                                } else {
+                                    alert(res.msg)
+                                }
+                            }
+                        })
+                    })
+
+
+
+                } else {
+                    // 将模态框按钮设置为编辑
+                    // 获取当前点击事件的下标，通过下标从后台获取 当前文章类别的信息渲染到当前的模态框
+                    const index = $(e.relatedTarget).parents('tr').index();
+                    $('.btn-primary').text('修改');
+                    $.ajax({
+                        type: 'get',
+                        url: BigNew.category_search,
+                        data: { id: index + 1 },
+                        dataType: 'json',
+                        success: function (res) {
+                            console.log(res);
+
+                            $('#recipient-name').val(res.data[0].name);
+                            $('#message-text').val(res.data[0].slug)
+                        }
+                    });
+
+                    // 给修改按钮注册点击事件 点击后发送post请求，将修改后的数据上传到后台， 并且刷新页面。
+                    $('.btn-primary').on('click', function () {
+                        const index = $(e.relatedTarget).parents('tr').index();
+                        $.ajax({
+                            type: 'post',
+                            url: BigNew.category_edit,
+                            data: {
+                                id: index,
+                                name: $('#recipient-name').val(),
+                                slug: $('#message-text').val()
+                            },
+                            dataType: 'json',
+                            success: function (res) {
+                                console.log(res);
+                            }
+                        })
+                    })
+
+                    // 模态框关闭的时候 清除模态框里面的数据
+                }
+            })
+
         })
     </script>
 

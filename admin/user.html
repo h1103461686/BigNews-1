@@ -132,7 +132,7 @@
                             $('.modal-body p').text(res.msg);
                             $('.modal').modal({ keyboard: true });
                             $('.modal').on('hidden.bs.modal', function () {
-                                window.parent.location.href = './index.html';
+                                parent.location.reload()
                             })
                         }
                     }

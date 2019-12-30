@@ -71,7 +71,7 @@
       if (input_txt === '' || input_pass === '') {
         // 用户名密码有问题就 return 退出，代码无需往后执行
         //使用模态框
-        $('#login_msg').text('用户名与密码不能为空')
+        $('.modal-body p').text('用户名与密码不能为空')
         $('.modal').modal({ keyboard: true });
         return;
       }
@@ -90,8 +90,9 @@
             //处理响应结果
             // 调用模态框
             if (res.code === 200) {
+              
               localStorage.setItem('token', res.token);
-              $('#login_msg').text(res.msg);
+              $('.modal-body p').text(res.msg);
               $('.modal').modal({ keyboard: true });
               $('.modal').on('hidden.bs.modal', function () {
                 location.href = './index.html';

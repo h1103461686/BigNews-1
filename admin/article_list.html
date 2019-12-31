@@ -120,14 +120,15 @@
 
             // 设置当前页面显示的文章列表条数
             const now_list = 10;
-            // 设置当前页面的页数
-            let now_page = 1
+            let now_page;
             // 以下数据需要先请求才能获得
             // 设置当前页面的总页数
             let now_pages;
+            // 设置当前页面的文章数量
+            let now_pageList;
 
             // 封装函数 渲染局部页面
-            function getContent(callBack) {
+            function getContent(callBack, startPage) {
                 const now_type = $('#selCategory').val();
                 const now_status = $('#selStatus').val();
                 $.ajax({
@@ -141,28 +142,29 @@
                         perpage: now_list,
                     },
                     success: function (res) {
+                        now_pageList = res.data.data.length;
                         // 渲染文章内容
                         $('.table tbody').html(template('article_list', res));
                         // 重新获取文章内容的总页数
                         now_pages = res.data.totalPage;
                         // 回调函数
-                        callBack ? callBack(now_pages) : '';
+                        callBack ? callBack(now_pages, startPage) : '';
                     }
                 });
             }
 
             // 封装函数 渲染分页器  一个参数: 总页面数
-            function getPagination(now_pages) {
+            function getPagination(now_pages, startPage = 1) {
                 $('#pagination-demo').twbsPagination('destroy');
                 $('#pagination-demo').twbsPagination({
                     totalPages: now_pages,
-                    visiblePages: now_list,
+                    visiblePages: 7,
+                    startPage: startPage,
                     first: '<<',
                     last: '>>',
                     prev: '<',
                     next: '>',
                     onPageClick: function (event, page) {
-                        // 获取点击的页码
                         now_page = page;
                         getContent();
                     }
@@ -201,7 +203,10 @@
                     data: { id: currentId },
                     success: function (res) {
                         alert(res.msg);
-                        getContent();
+                        if (now_pages !== 1 && now_pageList === 1) {
+                            now_page--;
+                        }
+                        getContent(getPagination, now_page);
                     }
                 })
             })

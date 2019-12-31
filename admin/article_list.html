@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="./css/iconfont.css">
     <link rel="stylesheet" href="./css/main.css">
     <script src="./libs/jquery-1.12.4.min.js"></script>
+    <script src="./libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="./libs/jquery.twbsPagination.js"></script>
+
     <!-- 引入模板引擎js文件 -->
     <script src="./libs/template-web.js"></script>
     <script src="./js/http.js"></script>
@@ -70,15 +73,16 @@
                 </tbody>
             </table>
             <div class="row text-center">
+                <ul id="pagination-demo" class="pagination-sm"></ul>
             </div>
         </div>
     </div>
 
 
-
-    <script type="text/html" id="res">
+    <!-- 文章内容模板 -->
+    <script type="text/html" id="article_list">
     {{each data.data}}
-    <tr>
+    <tr data-id="{{$value.id}}">
         <td>{{$value.title}}</td>
         <td>{{$value.author}}</td>
         <td>{{$value.category}}</td>
@@ -91,17 +95,122 @@
     </tr>
     {{/each}}
     </script>
+
+    <!-- 下拉框模板 -->
+    <script type="text/html" id="category_list">
+        <option value="">所有分类</option>
+        {{each data}}
+        <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+
+
     <script>
+        /* 每次局部页面刷新:
+                1, 获取当前的文章分类
+                2, 获取当前的文章状态
+                3, 获取当前的文章总页数
+                4, 获取当前的文章页数
+                5, 渲染到页面
+         */
+
+
         // 入口函数   页面一加载就获取后台数据,渲染到本页面
         $(function () {
+
+            // 设置当前页面显示的文章列表条数
+            const now_list = 10;
+            // 设置当前页面的页数
+            let now_page = 1
+            // 以下数据需要先请求才能获得
+            // 设置当前页面的总页数
+            let now_pages;
+
+            // 封装函数 渲染局部页面
+            function getContent(callBack) {
+                const now_type = $('#selCategory').val();
+                const now_status = $('#selStatus').val();
+                $.ajax({
+                    type: 'get',
+                    url: BigNew.article_query,
+                    dataType: 'json',
+                    data: {
+                        type: now_type,
+                        state: now_status,
+                        page: now_page,
+                        perpage: now_list,
+                    },
+                    success: function (res) {
+                        // 渲染文章内容
+                        $('.table tbody').html(template('article_list', res));
+                        // 重新获取文章内容的总页数
+                        now_pages = res.data.totalPage;
+                        // 回调函数
+                        callBack ? callBack(now_pages) : '';
+                    }
+                });
+            }
+
+            // 封装函数 渲染分页器  一个参数: 总页面数
+            function getPagination(now_pages) {
+                $('#pagination-demo').twbsPagination('destroy');
+                $('#pagination-demo').twbsPagination({
+                    totalPages: now_pages,
+                    visiblePages: now_list,
+                    first: '<<',
+                    last: '>>',
+                    prev: '<',
+                    next: '>',
+                    onPageClick: function (event, page) {
+                        // 获取点击的页码
+                        now_page = page;
+                        getContent();
+                    }
+                });
+            }
+
+            getContent(getPagination);
+
+
+
+            // 下拉框渲染
             $.ajax({
                 type: 'get',
-                url: BigNew.article_query,
+                url: BigNew.category_list,
                 dataType: 'json',
                 success: function (res) {
-                    $('.table tbody').html(template('res', res))
+                    $('#selCategory').html(template('category_list', res));
                 }
             })
+
+            // 筛选按钮 点击事件
+            $('#btnSearch').click(function (e) {
+                e.preventDefault();
+                getContent(getPagination);
+            })
+
+            // 删除按钮 点击事件 委派
+            $('.table tbody').on('click', '.delete', function () {
+                // 获取当前点击项的id
+                const currentId = $(this).parents('tr')[0].dataset.id;
+                // 通过id获取后台数据,删除
+                $.ajax({
+                    type: 'post',
+                    url: BigNew.article_delete,
+                    dataType: 'json',
+                    data: { id: currentId },
+                    success: function (res) {
+                        alert(res.msg);
+                        getContent();
+                    }
+                })
+            })
+
+            // 编辑按钮 点击事件 委派
+
+
+
+
         })
     </script>
 

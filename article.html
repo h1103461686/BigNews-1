@@ -208,68 +208,7 @@
     <!-- 引入模板引擎js文件 -->
     <script src="./js/template-web.js"></script>
     <script src="./js/jquery-1.12.4.min.js"></script>
-    <script src="./admin/js/http.js"></script>
-    <!--文章详情 -->
-    <script id="author_list" type="text/html">
-        {{data.author}} 发布于 {{data.date}}&nbsp;&nbsp;&nbsp;分类: {{data.category}}&nbsp;&nbsp;&nbsp;阅读:
-                ({{data.read}})&nbsp;&nbsp;&nbsp;评论: ({{data.comments}})
-    </script>
-    <!-- 评论列表 -->
-    <script id="comment" type="text/html">
-            {{ each data v }}
-            <div class="comment_detail_list">
-                <div class="person_pic fl">{{ v.author.substr(0,1) }}</div>
-                <div class="name_time fl"><b>{{ v.author }}</b><span>{{ v.date }}</span></div>
-                <div class="comment_text fl">
-                    {{ v.content }}
-                </div>
-            </div>
-            {{ /each }}
-        </script>
-    <script>
-        // 入口函数
-        $(function () {
-            // 文章详情
-            //获取点击过来的文章id(获取到地址栏的地址,将等于号作为分隔符号将数据整理为字符串数组,选中等于号后面一段作为id参数)
-            var id = window.location.search.split("=")[1];
-            $.ajax({
-                type: 'get',
-                url: 'http://localhost:8080/api/v1/index/article',
-                // 把id传递过去匹配
-                data: {
-                    id: id
-                },
-                success: function (res) {
-                    // 成功接收到数据执行
-                    if (res.code === 200) {
-                        // 把获取到的文章数据,渲染到对应的标签上
-                        $('.article_title').text(res.data.title);
-                        $('.article_con').html(res.data.content);
-                        const resH = template('author_list', res)
-                        $('.article_info').html(resH)
-                    }
-                }
-            })
-            // 评论列表
-            $.ajax({
-                type: 'get',
-                url: 'http://localhost:8080/api/v1/index/get_comment',
-                // 把id传递过去匹配
-                data: {
-                    articleId: id
-                },
-                // 转为json格式请求
-                dataType: 'json',
-                success: function (res) {
-                    console.log(res);
-                    // 将获取到的内容渲染在标签上
-                    $('comment_list_con').html(template('comment', res))
-                    //根据数据长度显示评论条数
-                    $('.comment_count').text(res.comments + '条评论')
-                }
-            })
-        })
-    </script>
+
 </body>
 
 </html>

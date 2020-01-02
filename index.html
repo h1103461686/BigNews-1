@@ -327,6 +327,12 @@
       </li>
       {{ /each }}
     </script>
+    <!-- 6.焦点关注 -->
+    <script id="guanzhu" type="text/html">
+      {{ each data}}
+      <li><a href="./article.html?id={{ $value.id }}">{{ $value.intro }}</a></li>
+      {{ /each }}
+    </script>
     <script>
       // 热门排行
       $.ajax({
@@ -346,6 +352,16 @@
         success: function(backData) {
           console.log(backData);
           $(".comment_list").html(template("comment", backData));
+        }
+      });
+      //焦点关注
+      $.ajax({
+        url: "http://localhost:8080/api/v1/index/attention",
+        type: "get",
+        dataType: "json",
+        success: function(backData) {
+          console.log(backData);
+          $(".guanzhu_list").html(template("guanzhu", backData));
         }
       });
     </script>

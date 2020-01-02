@@ -317,7 +317,18 @@
       <li><span class="first">{{$index+1}}</span><a href="./article.html?id={{ $value.id }}">{{ $value.title }}</a></li>
       {{ /each }}
     </script>
+    <!-- 5.最新评论模板 -->
+    <script id="comment" type="text/html">
+      {{ each data}}
+      <li>
+          <span>{{ $value.author.substr(0,1) }}</span>
+          <b><em>{{ $value.author }}</em> {{ $value.date }}说:</b>
+          <strong>{{ $value.intro }}</strong>
+      </li>
+      {{ /each }}
+    </script>
     <script>
+      // 热门排行
       $.ajax({
         url: "http://localhost:8080/api/v1/index/rank",
         type: "get",
@@ -325,6 +336,16 @@
         success: function(backData) {
           console.log(backData);
           $(".hotrank_list").html(template("rank", backData));
+        }
+      });
+      //最新评论
+      $.ajax({
+        url: "http://localhost:8080/api/v1/index/latest_comment",
+        type: "get",
+        dataType: "json",
+        success: function(backData) {
+          console.log(backData);
+          $(".comment_list").html(template("comment", backData));
         }
       });
     </script>

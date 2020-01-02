@@ -6,18 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <script src="./admin/libs/tinymce/tinymce.min.js"></script>
-    <script>
-        tinymce.init({
-            selector: '#mytextarea'
-        });
-    </script>
+    <script src="./js/jquery-1.12.4.min.js"></script>
 </head>
 
 <body>
-    <div method="post">
-        <textarea id="mytextarea">Hello, World!</textarea>
-    </div>
+    <div class="box"></div>
+    <script>
+        this.x = 9;    // 在浏览器中，this 指向全局的 "window" 对象
+        var module = {
+            x: 81,
+            getX: function () { return this.x; }
+        };
+
+        console.log(module.getX());
+        ; // 81
+
+
+    </script>
 </body>
 
 </html>

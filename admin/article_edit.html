@@ -153,7 +153,7 @@
           },
           success: function(response) {
             console.log(response);
-            if (response.code == 200) {
+            if (response.code === 200) {
               $("input.title").val(response.data.title);
               $(".article_cover").attr("src", response.data.cover);
               $("select.category").val(response.data.categoryId);
@@ -181,6 +181,15 @@
           fd.append("content", tinyMCE.activeEditor.getContent());
           fd.append("id", id);
           fd.append("state", state);
+          //   加判断，无标题和无内容不能修改
+          if ($("#inputTitle").val() === "") {
+            alert("标题不能为空");
+            return;
+          }
+          if (tinymce.activeEditor.getContent() === "") {
+            alert("文本内容不能为空");
+            return;
+          }
           $.ajax({
             type: "post",
             url: BigNew.article_edit,

@@ -122,29 +122,93 @@
     <!-- 创建 文章分类 模板 -->
     <script id="cat_list" type="text/html">
       {{each}}
-      <option value='{{$value.id}}'> {{$value.name}}</option>
+      <option value='{{$value.id}}'>{{$value.name}}</option>
       {{/each}}
     </script>
 
     <script>
       $(function() {
         //   获取  list页面的 文章id
-        let id = window.location.href.split("=")[1];
+        var id = window.location.href.split("=")[1];
         console.log(id);
 
-        //   渲染文章分类
+        //  1 渲染文章分类
         $.ajax({
           type: "get",
           url: BigNew.category_list,
-
-          dataType: "json",
           success: function(response) {
-            console.log(response);
-
+            // console.log(response);
             if (response.code === 200) {
               $("select.category").html(template("cat_list", response.data));
             }
           }
+        });
+
+        //  2  加载文章详细信息
+        $.ajax({
+          type: "get",
+          url: BigNew.article_search,
+          data: {
+            id: id
+          },
+          success: function(response) {
+            console.log(response);
+            if (response.code == 200) {
+              $("input.title").val(response.data.title);
+              $(".article_cover").attr("src", response.data.cover);
+              $("select.category").val(response.data.categoryId);
+              $("#testico").val(response.data.date);
+            }
+            // 加一个 定时器，因为富文本插件比较大 加载的数据返回完成了 插件还没有加载完成，所以价格定时器让数据延迟加载
+            setTimeout(function() {
+              // 获取富文本内容
+              tinymce.activeEditor.setContent(response.data.content);
+            }, 200);
+          }
+        });
+
+        //  3 文件预览 给文件封面中上传文件注册上传事件
+        $("#inputCover").change(function() {
+          let file = this.files[0];
+          let url = URL.createObjectURL(file);
+          $(".article_cover").attr("src", url);
+        });
+
+        // 4  编辑文章多出使用 所以封装
+        function editArticlie(state) {
+          let fd = new FormData($("#form")[0]);
+          console.log(fd);
+          fd.append("content", tinyMCE.activeEditor.getContent());
+          fd.append("id", id);
+          fd.append("state", state);
+          $.ajax({
+            type: "post",
+            url: BigNew.article_edit,
+            data: fd,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+              if (response.code === 200) {
+                alert("修改成功");
+                window.history.back();
+              } else {
+                alert(response.msg);
+              }
+            }
+          });
+        }
+        //发布
+        $(".btn-edit").click(function(e) {
+          e.preventDefault();
+          editArticlie("已发布");
+        });
+
+        /* 存为草稿 */
+        $(".btn-draft").click(function(e) {
+          //3.1 禁用表单默认提交事件
+          e.preventDefault();
+          //3.2 ajax发送请求
+          editArticlie("草稿");
         });
       });
     </script>

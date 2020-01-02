@@ -229,7 +229,9 @@
     <script src="./js/jquery-1.12.4.min.js"></script>
     <!-- 接口 -->
     <script src="./admin/js/http.js"></script>
-    <!-- 热门焦点的模板渲染 -->
+
+
+    <!-- 1.热门焦点-模板渲染 -->
     <script id='focus_news' type="text/html">
         {{ each data }}
         {{ if $index == 0 }}
@@ -242,7 +244,8 @@
         </li>
         {{ /each }}
     </script>
-    <!-- 分类列表-模板渲染 -->
+
+    <!-- 2.分类列表-模板渲染 -->
     <script id="cat_list" type="text/html">
         <li class='up'></li>
         {{ each data}}
@@ -250,8 +253,26 @@
         {{ /each }}
     </script>
 
+    <!-- 3.最新资讯-模板渲染 -->
+    <script id="news" type="text/html">
+        {{ each data}}
+        <div class="common_news_list">
+            <a href="#" class="list_pic"><img src="{{$value.cover}}" alt=""></a>
+            <h4><a href="#">{{ $value.title }}</a></h4>
+            <p>{{$value.intro}}</p>
+            <div class="new_info">
+                <span>标签：{{ $value.categroy }}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<i
+                        class="fa fa-eye"></i>&nbsp;阅读({{ $value.read }}
+                    )&nbsp;&nbsp;&nbsp;<i class="fa fa-commenting"></i>&nbsp;评论( {{ $value.comments }} )</span>
+                <b>发布于 {{ $value.date }}</b>
+            </div>
+        </div>
+        {{ /each }}
+    </script>
+
     <script>
         $(function () {
+            // 1.热门焦点
             $.ajax({
                 url: 'http://localhost:8080/api/v1/index/hotpic',
                 success: function (response) {
@@ -260,13 +281,23 @@
                     $('.focus_list').html(htmlStr);
                 }
             })
-
+            // 2.分类列表
             $.ajax({
                 url: 'http://localhost:8080/api/v1/index/category',
                 success: function (response) {
                     // console.log(response);
                     const htmlStr = template('cat_list', response);
                     $('.level_two').html(htmlStr);
+                }
+            })
+            // 3.最新资讯
+            $.ajax({
+                url: 'http://localhost:8080/api/v1/index/latest',
+                dataType: 'json',
+                success: function (response) {
+                    console.log(response);
+                    const htmlStr = template('news', response)
+                    $('.common_news').html(htmlStr)
                 }
             })
         })
